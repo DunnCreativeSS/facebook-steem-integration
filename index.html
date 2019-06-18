@@ -1,0 +1,129 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="//cdn.steemjs.com/lib/latest/steem.min.js"></script>
+
+
+</head>
+
+<body>
+
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.3&appId=2050575015247773&autoLogAppEvents=1"></script>
+
+
+<script>
+//ambigiouspankake	RFmYHAisC8mU1BhfQTWELD6rekaE2pm6
+let wif = '5JKLDD3Dmft4wMVxY6iJBWBgsP16WqFing5fEpBV2k1YARngzsp'
+let name = "";
+$( document ).ready(function() {
+
+
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '2050575015247773',
+	  appSecret : '24e025fca153e337deb889742ab33b94',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v3.3'
+    });
+  };
+  
+setTimeout(function(){
+
+FB.login(function(response) {
+	FB.api('/me/likes',{'limit': '100'}, function(response) {
+let a = 0;
+let names = []
+let titles = []
+let data = response.data
+	steem.api.getDiscussionsByCreated({"tag": 'fb-steem-integration', "limit": 100}, function(err, result) {
+	console.log(err)
+	console.log(result)
+    if (err === null) {
+        var i, len = result.length;
+        for (i = 0; i < len; i++) {
+            var discussion = result[i];
+            console.log(i, discussion);
+			let f = 0;
+			doVote(discussion, f);
+			f++;
+	titles.push(discussion.title)
+    for (var r in data){
+	names.push({name: data[r].name, id: data[r].id, created_time: data[r].created_time})
+   
+        }
+		}
+		for (d in names){
+			if (!titles.includes(data[r].name)){
+			doPost(data[r])
+			}
+		}
+		} else {
+        console.log(err);
+    }
+		 });
+});
+async function doVote(discussion, f){
+setTimeout(function(){
+  steem.broadcast.vote(
+    wif,
+    'ambigiouspankake', // Voter
+    discussion.author, // Author
+    discussion.permlink,
+	10000, // Weight (10000 = 100%)
+    function(err, result) {
+      console.log(err, result);
+    }
+  );
+
+			}, 30050 * f);
+}
+async function doPost(datar, a){
+setTimeout(function(){
+let jsonMetadata = JSON.stringify({ 
+         tags: ['fb-steem-integration', datar.id], 
+         app: `fb-steem-integration` 
+       }) 
+
+	steem.broadcast.comment(wif, '', 'fb-steem-integration', 'ambigiouspankake', 'fb-steem-integration-' + Math.random() * 100000000000000000, datar.name, 'Fb user ' + name + ' Liked the page ' + datar.name + ' on ' + datar.created_time, jsonMetadata, function(err, result) {
+	  console.log(err, result);
+	});
+	}, a * 5.1 * 1000 * 60)
+}
+FB.api(
+    "/me",{'limit': '100'},
+    function (response) {
+      if (response && !response.error) {
+        name = (response['name'])
+		console.log(name);
+      }
+    }
+);
+FB.api(
+    "/me/photos",{'limit': '100'},
+    function (response) {
+      if (response && !response.error) {
+        console.log(response)
+      }
+    }
+);
+FB.api(
+    "/me/posts",{'limit': '100'},
+    function (response) {
+      if (response && !response.error) {
+        console.log(response)
+      }
+    }
+);
+}, {scope: 'email,user_likes,user_location,user_photos'});
+
+
+
+}, 5000);
+});
+</script>
+</body>
+
+
+</html>
